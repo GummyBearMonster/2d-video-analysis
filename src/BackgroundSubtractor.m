@@ -1,5 +1,6 @@
    classdef BackgroundSubtractor
-   %backgroundSubtractor Wrapper class for OpenCV class BackgroundSubtractorMOG2
+   %backgroundSubtractor Wrapper class for OpenCV class
+   %BackgroundSubtractor KNN
    %   obj = backgroundSubtractor(history, dist2Threshold, bShadowDetection)
    %   creates an object with properties 
    %

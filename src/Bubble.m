@@ -3,15 +3,15 @@ classdef bubble
         area;
         centroid;
         top_left;
-%         top_right;
-%         right_top;
+        top_right;
+        right_top;
         right_bottom;
-%         bottom_right;
+        bottom_right;
         bottom_left;
         split=0;
         coalesced=0;
         left_bottom;
-%         left_top;
+        left_top;
         asp;
         v=[0,0,0];
         co_contain;
@@ -28,13 +28,13 @@ classdef bubble
                 bubble_obj.area=area;
                 bubble_obj.centroid=centroid;
                 bubble_obj.top_left=ext(1,:);
-%                 bubble_obj.top_right=ext(2,:);
-%                 bubble_obj.right_top=ext(3,:);
+                bubble_obj.top_right=ext(2,:);
+                bubble_obj.right_top=ext(3,:);
                 bubble_obj.right_bottom=ext(4,:);
-%                 bubble_obj.bottom_right=ext(5,:);
+                bubble_obj.bottom_right=ext(5,:);
                 bubble_obj.bottom_left=ext(6,:);
                 bubble_obj.left_bottom=ext(7,:);
-%                 bubble_obj.left_top=ext(8,:);
+                bubble_obj.left_top=ext(8,:);
                 bubble_obj.asp=(ext(4,1)+ext(3,1)-ext(7,1)-ext(8,1))/(ext(5,2)+ext(6,2)-ext(1,2)-ext(2,2));
                 bubble_obj.ind=ind;
                 if centroid(2)>=height-50
@@ -46,9 +46,6 @@ classdef bubble
             x=false;
             v_out=[0 0 0];
             v_temp=this_bubble.centroid - bubble2.centroid;
-            
-%             vx=this_bubble.centroid(1)-bubble2.centroid(1);
-%             vy=this_bubble.centroid(2)-bubble2.centroid(2);
             
             if sqrt((v_temp(2)+v_est)^2+v_temp(1)^2)<v_thresh &&...
                     abs(this_bubble.area-bubble2.area)<area_thresh
