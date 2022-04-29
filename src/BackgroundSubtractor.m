@@ -1,4 +1,4 @@
-   classdef backgroundSubtractor
+   classdef BackgroundSubtractor
    %backgroundSubtractor Wrapper class for OpenCV class BackgroundSubtractorMOG2
    %   obj = backgroundSubtractor(history, dist2Threshold, bShadowDetection)
    %   creates an object with properties 
@@ -29,7 +29,7 @@
        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%       
        methods
            % Constructor
-           function obj = backgroundSubtractor(history, dist2Threshold, bShadowDetection,kNNSamples)
+           function obj = BackgroundSubtractor(history, dist2Threshold, bShadowDetection,kNNSamples)
                if(nargin > 0)
                  obj.history          = history; 
                  obj.dist2Threshold     = dist2Threshold;
