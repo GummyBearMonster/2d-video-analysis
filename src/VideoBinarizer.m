@@ -11,6 +11,8 @@ classdef VideoBinarizer
         binarized_array;
         bw_params;
         subtract_bg;
+        min_bub_area;
+        min_black_area;
     end
     
     methods
@@ -20,6 +22,8 @@ classdef VideoBinarizer
                 options.Method {mustBeMember(options.Method, ["global","adaptive","pca"])} = 'global'
                 options.SubtractBg {mustBeNumericOrLogical} = false
                 options.SystemWidth {mustBeNumeric} = 200
+                options.MinBubArea {mustBeNumeric} = 100
+                options.MinBlackArea {mustBeNumeric} = 2000
             end
             
             vb.vr=VideoReader(filePath);
@@ -29,6 +33,8 @@ classdef VideoBinarizer
             vb.system_width = options.SystemWidth;
             vb.roi = [1, vb.vr.Width,1, vb.vr.Height];
             vb.subtract_bg = options.SubtractBg;
+            vb.min_bub_area = options.MinBubArea;
+            vb.min_black_area = options.MinBlackArea;
         end
         
         function I = get_frame(vb,frame, options)
@@ -63,22 +69,28 @@ classdef VideoBinarizer
         
         
         function bw = binarize_frame(vb, I)
+            I = im2uint8(I);
             
             if vb.subtract_bg
-                I2 = I-vb.bg;
+                I = I-vb.bg;
             end
             
             switch vb.method
                 case 'global'
-                    bw=imbinarize(I2);
+                    bw=imbinarize(I);
                     if size(vb.params)>0
-                        bw = imbinarize(I2,vb.params.thresh);
+                        bw = imbinarize(I,vb.bw_params.thresh);
                     end
+
                 case 'adaptive'
-                    bw=logical(cvAdaptiveThreshold(I2,vb.params.nblock,vb.params.bar));
-                    
-                    
+                    I=imgaussfilt(I,vb.bw_params.gaussian_sigma);
+                    bw=logical(cvAdaptiveThreshold(I,vb.bw_params.nblock,vb.bw_params.bar));
+                
             end
+            bw=bwareaopen(bw, vb.min_bub_area);
+            bw=imcomplement(bw);
+            bw=bwareaopen(bw, vb.min_black_area);
+            bw=imcomplement(bw);
         end
     end
     
