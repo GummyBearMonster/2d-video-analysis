@@ -1,4 +1,4 @@
-classdef bubble
+classdef Bubble
     properties 
         area;
         centroid;
@@ -23,7 +23,7 @@ classdef bubble
         id;
     end
     methods
-        function bubble_obj=bubble(area,centroid,ext,ind,height)
+        function bubble_obj=Bubble(area,centroid,ext,ind,height)
             if nargin>0
                 bubble_obj.area=area;
                 bubble_obj.centroid=centroid;

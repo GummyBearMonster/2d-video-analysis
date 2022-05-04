@@ -1,4 +1,4 @@
-classdef frame
+classdef Frame
     properties(Constant)
         AREA=1;
         CENTROID_X=2;
@@ -32,7 +32,7 @@ classdef frame
     end
     
     methods
-        function this_frame=frame(s,image,frame_i)
+        function this_frame=Frame(s,image,frame_i)
             if nargin>0
                 this_frame.id_cnt=0;
                 centroids= cat(1,s.Centroid);
@@ -40,9 +40,13 @@ classdef frame
                 ext=cat(2,s.Extrema);
                 this_frame.index=frame_i;
                 this_frame.image=image;
+                ii=1;
                 for j=1:size(areas,1)
-                    temp_bubble=bubble(areas(j),centroids(j,:),ext(:,2*j-1:2*j),j,size(image,1));
-                    this_frame.bubbles{j}=temp_bubble;
+                    if centroids(j,1)>50 && centroids(j,1)<size(image,2)-50
+                        temp_bubble=Bubble(areas(j),centroids(j,:),ext(:,2*j-1:2*j),j,size(image,1));
+                        this_frame.bubbles{ii}=temp_bubble;
+                        ii = ii+1;
+                    end
                 end
             end
         end
