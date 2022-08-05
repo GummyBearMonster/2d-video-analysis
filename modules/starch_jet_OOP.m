@@ -1,6 +1,6 @@
 write=true;
 fps=50;
-minbubarea=50;
+minbubarea=1;
 
 AREA=1;
 CENTROID_X=2;
@@ -31,7 +31,7 @@ I=zeros(size(binarizedArray,1),size(binarizedArray,2));
 I2=bwareaopen(I,minbubarea);
 L=bwlabeln(I2,4);
 s=regionprops(L,'Centroid','Area','Extrema');
-previous_frame=frame(s,L,1);
+previous_frame=Frame(s,L,1);
 if write
     vo=VideoWriter('track.avi');
     vo.FrameRate=25;
@@ -52,10 +52,10 @@ for i=startFrame:size(binarizedArray,3)
         
         s=regionprops(L,'Centroid','Area','Extrema');
 
-        current_frame=frame(s,L,i);
+        current_frame=Frame(s,L,i);
         current_frame=current_frame.track_frame(previous_frame,9,100,id_cnt,7);
 % 
-            if write && i<startFrame+100
+            if write && i<startFrame+1000
               current_frame.writeFrame(vo,I);
             end   
         [arr,uparr,downarr,id_cnt]=frame2Array(current_frame);
@@ -79,7 +79,7 @@ cau=zeros(0,1);
 cnt=0;
 for i=1:size(outputArray,3)
     for j=1:100
-        if outputArray(j,COALESCED,i)~=0 && outputArray(j,NCOALESCE,i)>0 %&& outputArray(j,CENTROID_X,i)>10 
+        if outputArray(j,COALESCED,i)~=0  && outputArray(j,LEFT_BOTTOM_X,i)>25 && outputArray(j,RIGHT_BOTTOM_X,i)<width-25
             ca=cat(1,ca,[outputArray(j,CENTROID_X,i) outputArray(j,CENTROID_Y,i)]);
             caa=cat(1,caa,[outputArray(j,CENTROID_Y,i) outputArray(j,AREA,i)]);
             can=cat(1,can,round(outputArray(j,NCOALESCE,i)*2)/2);
@@ -111,7 +111,7 @@ saveas(gcf,'coarea.jpg');
 saveas(gcf,'coarea.fig');
 
 %%
-dy=10;
+dy=1;
 
 yheight=0:dy:height;
 ymap=(height-yheight)*dx;
@@ -134,9 +134,9 @@ widthseg=cell(1,size(widthmap,2));
 for i=1:size(outputArray,3)
     
         for j=1:100
-            if outputArray(j,BOTTOM_LEFT_Y,i)<height-1 && outputArray(j,TOP_LEFT_Y,i)>0 && outputArray(j,AREA,i)>minbubarea ...
-                &&outputArray(j,SPLIT,i)==0 && outputArray(j,COALESCED,i)==0 && outputArray(j,V,i)>0 ...
-                &&outputArray(j,LEFT_BOTTOM_X,i)>25 && outputArray(j,RIGHT_BOTTOM_X,i)<width-25
+            if outputArray(j,BOTTOM_LEFT_Y,i)<height-1 && outputArray(j,TOP_LEFT_Y,i)>0
+            
+            
                 yseg{1,floor(outputArray(j,CENTROID_Y,i)/dy)+1}=cat(2,yseg{1,floor(outputArray(j,CENTROID_Y,i)/dy)+1},(outputArray(j,RIGHT_BOTTOM_X,i)- outputArray(j,LEFT_BOTTOM_X,i))*dx);
                 yseg{2,floor(outputArray(j,CENTROID_Y,i)/dy)+1}=cat(2,yseg{2,floor(outputArray(j,CENTROID_Y,i)/dy)+1},outputArray(j,V_Y,i)*fps*dx);
                 yseg{3,floor(outputArray(j,CENTROID_Y,i)/dy)+1}=cat(2,yseg{3,floor(outputArray(j,CENTROID_Y,i)/dy)+1},outputArray(j,AREA,i)*dx*dx);
@@ -335,7 +335,7 @@ reg=[yseg_mean(2,:)+yseg_std(2,:),fliplr(yseg_mean(2,:)-yseg_std(2,:))];
 h=fill(ypos2,reg,[0.6 0.6 0.7],'LineStyle','--','LineWidth',0.5);
 set(h,'facealpha',0.1)
 %xlim([0 height*dx])
-ylim([0 max(yseg_mean(2,:)+yseg_std(2,:))])
+ylim([0 max(yseg_mean(2,:)+ yseg_std(2,:))])
 legend('Mean bubble rising velocity','Mean rising velocity ± SD')
 ylabel('Bubble vertical velocity (mm/s)')
 xlabel('Relative y position from bottom (mm)')
@@ -371,25 +371,25 @@ saveas(gca,'avg_area.fig')
 saveas(gca,'avg_area.jpg')
 
 %% Shear rate
-figure
-ypos2=[ypos,fliplr(ypos)];
-plot(ypos,yseg_mean(6,:),'b')
-hold on
-reg=[yseg_mean(6,:)+yseg_std(6,:),fliplr(yseg_mean(6,:)-yseg_std(6,:))];
-h=fill(ypos2,reg,[0.6 0.6 0.7],'LineStyle','--','LineWidth',0.5);
-set(h,'facealpha',0.1)
-%xlim([0 height*dx])
-%ylim([0 max(yseg_mean(3,:)+yseg_std(3,:))])
-legend('Mean bubble shear','Mean shear ± SD','Location','northeast')
-ylim([0 max(yseg_mean(6,:)+yseg_std(6,:))])
-ylabel('Shear Rate (s^{-1})')
-xlabel('Bubble height (mm)')
-%set(gcf,'units','inches','position',[0,0,3.25,2.5])
-set(gca,'FontSize',10,'FontName','Times New Roman')
-saveas(gca,'avg_shear.fig')
-saveas(gca,'avg_shear.jpg')
-
+% figure
+% ypos2=[ypos,fliplr(ypos)];
+% plot(ypos,yseg_mean(6,:),'b')
+% hold on
+% reg=[yseg_mean(6,:)+yseg_std(6,:),fliplr(yseg_mean(6,:)-yseg_std(6,:))];
+% h=fill(ypos2,reg,[0.6 0.6 0.7],'LineStyle','--','LineWidth',0.5);
+% set(h,'facealpha',0.1)
+% %xlim([0 height*dx])
+% %ylim([0 max(yseg_mean(3,:)+yseg_std(3,:))])
+% legend('Mean bubble shear','Mean shear ± SD','Location','northeast')
+% ylim([0 max(yseg_mean(6,:)+yseg_std(6,:))])
+% ylabel('Shear Rate (s^{-1})')
+% xlabel('Bubble height (mm)')
+% %set(gcf,'units','inches','position',[0,0,3.25,2.5])
+% set(gca,'FontSize',10,'FontName','Times New Roman')
+% saveas(gca,'avg_shear.fig')
+% saveas(gca,'avg_shear.jpg')
 % 
+% % 
 % figure
 % semilogx(x,avg_vis,'k')
 % hold on
@@ -397,7 +397,7 @@ saveas(gca,'avg_shear.jpg')
 %     semilogx(yseg_mean(6,i),avg_vis(round((yseg_mean(6,i)-0.1)/0.001+1)),'b*')
 % end
 % xlim([0.1 20])
-% ylim([0 2])
+% ylim([0 1])
 % ylabel(['Effective viscosity, $\eta$' newline ' (Pa$\cdot$s)'],'interpreter','latex')
 % xlabel('Shear rate, $\dot{\gamma}$ ($s^{-1}$)','interpreter','latex')
 % set(gcf,'units','inches','position',[5,6,2.16,2])
@@ -405,10 +405,10 @@ saveas(gca,'avg_shear.jpg')
 % 
 % saveas(gca,'avg_shear_vis.fig')
 % saveas(gca,'avg_shear_vis.jpg')
-% 
+% %%
 % figure
 % semilogx(x,avg_vis,'k')
-% hold ona
+% hold on
 % dc=zeros(7,0);
 % uc=zeros(7,0);
 % for i = 1:size(downArray,3)
@@ -422,14 +422,15 @@ saveas(gca,'avg_shear.jpg')
 % 
 % for i =1:size(uc,2)
 %     if (uc(2,i)/uc(3,i)*fps-0.1)>0 
-%             semilogx(uc(2,i)/uc(3,i)*fps,avg_vis(round((uc(2,i)/uc(3,i)*fps-0.1)/0.001+1)),'g^')
+%             semilogx(uc(2,i)/uc(3,i)*fps,avg_vis(round((uc(2,i)/uc(3,i)*fps-0.1)/0.001)),'g^')
 %     end
 % end
 % h = zeros(3, 1);
 % h(1) = plot(-1,-1,'k-');
 % h(2) = plot(-1,-1,'r*');
 % h(3) = plot(-1,-1,'g^');
-% ylim([0 0.004])
+% ylim([0.09 0.14])
+% xlim([1e-1 1e2])
 % legend(h(3), 'Leading','Location','northeast');
 % ylabel(['Effective viscosity, $\eta$' newline ' (Pa$\cdot$s)'],'interpreter','latex')
 % xlabel('Shear rate, $\dot{\gamma}$ ($s^{-1}$)','interpreter','latex')
@@ -593,7 +594,7 @@ exportgraphics(t,'nc_area.jpg')
 
 
 %%
-save('all_co.mat','-v7.3','outputArray','ypos','yseg','yseg_mean','yseg_num','yseg_std', ...
+save('all.mat','-v7.3','outputArray','ypos','yseg','yseg_mean','yseg_num','yseg_std', ...
     'fps','areaseg2','areaseg_mean','areaseg_num','areaseg_std','height','dy','darea','dx', ...
     'areamap2','widthseg2','widthseg_mean','widthseg_num','widthseg_std','dwidth','widthmap2',...
     'yupseg2','ydownseg2','yupseg_mean','ydownseg_mean','yupseg_std','ydownseg_std','yupmap2','ydownmap2', ...

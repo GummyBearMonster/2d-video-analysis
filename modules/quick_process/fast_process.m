@@ -1,7 +1,7 @@
 %%
 write=true;
-fps=250;
-minbubarea=50;
+%fps=250;
+minbubarea=1;
 
 AREA=1;
 CENTROID_X=2;
@@ -53,7 +53,7 @@ for i=startFrame:size(binarizedArray,3)
         current_frame=frame_fast(s,L,i);
         current_frame=current_frame.track_frame(previous_frame,10,5000,id_cnt,7);
 
-            if write && i<startFrame+100
+            if write && i<startFrame+1000
               current_frame.writeFrame(vo,I);
             end   
         [arr,id_cnt]=frame2Array(current_frame);
@@ -74,7 +74,7 @@ cau=zeros(0,1);
 cnt=0;
 for i=1:size(outputArray,3)
     for j=1:50
-        if outputArray(j,COALESCED,i)~=0  && outputArray(j,LEFT_BOTTOM_X,i)>25 && outputArray(j,RIGHT_BOTTOM_X,i)<width-25
+        if outputArray(j,COALESCED,i)~=0  
             ca=cat(1,ca,[outputArray(j,CENTROID_X,i) outputArray(j,CENTROID_Y,i)]);
             caa=cat(1,caa,[outputArray(j,CENTROID_Y,i) outputArray(j,AREA,i)]);
             can=cat(1,can,round(outputArray(j,NCOALESCE,i)*2)/2);
@@ -99,7 +99,7 @@ figure
 h=gscatter((height-caa(:,1))*dx,caa(:,2)*dx*dx,can);
 lgn = legend();
 lgn.Location='eastoutside';
-xlim([1 600])
+xlim([1 300])
 xlabel('Height (mm)')
 ylabel('Area (mm^2)')
 saveas(gcf,'coarea.jpg');
@@ -107,7 +107,7 @@ saveas(gcf,'coarea.fig');
 
 
 %%
-dy=10;
+dy=5;
 
 yheight=0:dy:height;
 ymap=(height-yheight)*dx;
@@ -120,7 +120,7 @@ for i=1:size(outputArray,3)
     
     for j=1:50
         if outputArray(j,BOTTOM_LEFT_Y,i)<height-1 && outputArray(j,TOP_LEFT_Y,i)>0 ...
-                &&outputArray(j,LEFT_BOTTOM_X,i)>25 && outputArray(j,RIGHT_BOTTOM_X,i)<width-25
+                %&&outputArray(j,LEFT_BOTTOM_X,i)>25 && outputArray(j,RIGHT_BOTTOM_X,i)<width-25
             yseg{1,floor(outputArray(j,CENTROID_Y,i)/dy)+1}=cat(2,yseg{1,floor(outputArray(j,CENTROID_Y,i)/dy)+1},outputArray(j,AREA,i)*dx*dx);
             num_co(1,floor(outputArray(j,CENTROID_Y,i)/dy)+1)=num_co(1,floor(outputArray(j,CENTROID_Y,i)/dy)+1)+outputArray(j,COALESCED,i);
             num_split(1,floor(outputArray(j,CENTROID_Y,i)/dy)+1)=num_split(1,floor(outputArray(j,CENTROID_Y,i)/dy)+1)+outputArray(j,SPLIT,i);
@@ -163,7 +163,7 @@ hold on
 reg=[yseg_mean(1,:)+yseg_std(1,:),fliplr(yseg_mean(1,:)-yseg_std(1,:))];
 h=fill(ypos2,reg,[0.6 0.6 0.7],'LineStyle','--','LineWidth',0.5);
 set(h,'facealpha',0.1)
-xlim([0 600])
+xlim([0 300])
 legend('Mean bubble area','Mean area ± SD','Location','northeast')
 ylim([0 max(yseg_mean(1,:)+yseg_std(1,:))])
 ylabel('Bubble area (mm^2)')
@@ -186,10 +186,10 @@ ylabel('Area (mm^2)')
 yyaxis left
 plot(ypos,num_co2,'r')
 
-hold on
-plot(ypos,num_split2,'b-')
-legend('Coalescence','Splitting')
-xlim([0 600]) 
+%hold on
+%plot(ypos,num_split2,'b-')
+legend('Coalescence')%,'Splitting')
+xlim([0 300]) 
 ylabel('Number of Ocurrences')
 xlabel('Height (mm)')
 set(gcf, 'Position',  [100, 100, 700, 550])

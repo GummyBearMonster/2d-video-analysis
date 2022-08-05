@@ -37,11 +37,11 @@ classdef frame_fast
                 this_frame.image=image;
                 ii = 1;
                 for j=1:size(areas,1)
-                    if centroids(j,1)>50 && centroids(j,1)<size(image,2)-50
+                    %if centroids(j,1)>50 && centroids(j,1)<size(image,2)-50
                     temp_bubble=bubble_fast(areas(j),centroids(j,:),ext(:,2*j-1:2*j),j,size(image,1));
                     this_frame.bubbles{ii}=temp_bubble;
                     ii = ii+1;
-                    end
+                    %end
                 end
             end
         end
