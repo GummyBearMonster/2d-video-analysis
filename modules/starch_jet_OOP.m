@@ -1,5 +1,5 @@
 write=true;
-fps=50;
+fps=250;
 minbubarea=1;
 
 AREA=1;
@@ -25,7 +25,7 @@ A_Y=20;
 A=21;
 ID=22;
 %%
-startFrame = 1;
+startFrame = 1001;
 outputArray=zeros(100,22,size(binarizedArray,3));
 I=zeros(size(binarizedArray,1),size(binarizedArray,2));
 I2=bwareaopen(I,minbubarea);
@@ -39,7 +39,7 @@ if write
 end
 id_cnt=0;
 height=size(binarizedArray,1);
-for i=startFrame:size(binarizedArray,3)
+for i=startFrame:2002
         FRAME=i;
         I=binarizedArray(:,:,FRAME);
 
@@ -53,9 +53,9 @@ for i=startFrame:size(binarizedArray,3)
         s=regionprops(L,'Centroid','Area','Extrema');
 
         current_frame=Frame(s,L,i);
-        current_frame=current_frame.track_frame(previous_frame,9,100,id_cnt,7);
+        current_frame=current_frame.track_frame(previous_frame,9,200,id_cnt,7);
 % 
-            if write && i<startFrame+1000
+            if write && i<startFrame+500
               current_frame.writeFrame(vo,I);
             end   
         [arr,uparr,downarr,id_cnt]=frame2Array(current_frame);
@@ -111,7 +111,7 @@ saveas(gcf,'coarea.jpg');
 saveas(gcf,'coarea.fig');
 
 %%
-dy=1;
+dy=10;
 
 yheight=0:dy:height;
 ymap=(height-yheight)*dx;
@@ -134,7 +134,7 @@ widthseg=cell(1,size(widthmap,2));
 for i=1:size(outputArray,3)
     
         for j=1:100
-            if outputArray(j,BOTTOM_LEFT_Y,i)<height-1 && outputArray(j,TOP_LEFT_Y,i)>0
+            if outputArray(j,TOP_LEFT_Y,i)>0 && outputArray(j,BOTTOM_LEFT_Y,i)<height-1 
             
             
                 yseg{1,floor(outputArray(j,CENTROID_Y,i)/dy)+1}=cat(2,yseg{1,floor(outputArray(j,CENTROID_Y,i)/dy)+1},(outputArray(j,RIGHT_BOTTOM_X,i)- outputArray(j,LEFT_BOTTOM_X,i))*dx);
@@ -347,7 +347,9 @@ exportgraphics(t,'avg_v_y.jpg')
 figure
 ypos2=[ypos,fliplr(ypos)];
 plot(ypos,yseg_mean(3,:),'b')
+
 hold on
+plot((height-caa(:,1))*dx,caa(:,2)*dx*dx,'^')
 reg=[yseg_mean(3,:)+yseg_std(3,:),fliplr(yseg_mean(3,:)-yseg_std(3,:))];
 h=fill(ypos2,reg,[0.6 0.6 0.7],'LineStyle','--','LineWidth',0.5);
 %hold on
@@ -367,8 +369,8 @@ ylabel('Bubble area (mm^2)')
 xlabel('Bubble height (mm)')
 %set(gcf,'units','inches','position',[0,0,3.25,2.5])
 set(gca,'FontSize',10,'FontName','Times New Roman')
-saveas(gca,'avg_area.fig')
-saveas(gca,'avg_area.jpg')
+%saveas(gca,'avg_area.fig')
+%saveas(gca,'avg_area.jpg')
 
 %% Shear rate
 % figure

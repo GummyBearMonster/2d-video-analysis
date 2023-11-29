@@ -1,13 +1,13 @@
-vis=[];
+vis_m=[];
 shear=[];
 
 %%
-vis=vis/1000;
+vis=vis_m/1000;
 %%
 
-fn='cs44%rheology';
-dx=0.001;
-x=0.1:0.001:20;
+fn='cs10%rheology';
+dx=0.01;
+x=0.1:dx:1e3;
 
 figure
 
@@ -37,11 +37,13 @@ for i=1:size(x,2)
     avg_vis(i)=mean(vis_interp(:,i));
 end
 h(4)=semilogx(x,avg_vis,'--','DisplayName','Avg');
-xlim([0.1 20])
-ylim([0.17 10])
+xlim([0.1 1e3])
+ylim([0 4e-2])
 xlabel('Shear rate (/s)')
 ylabel('Viscosity (Pa s)')
 legend(h)
+%%
 saveas(gca,[fn '.fig'])
 saveas(gca,[fn '.jpg'])
 save([fn '.mat'])
+%%

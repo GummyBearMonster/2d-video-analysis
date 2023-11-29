@@ -1,37 +1,41 @@
-folders = dir('*psi*');
+folders = dir('*35ms*');
 
 for i = 1:size(folders,1)
     
     name = folders(i).name;
-    names{i}=name(8:end);
+    %names{i}=name(8:end);
     cd(name)
-    load('all_co.mat','ypos','yseg_mean','yseg_num', ...
-        'yseg_std','num_co2')
+    %load('all_co.mat','ypos','yseg_mean','yseg_num', ...
+%         'yseg_std','num_co2')
+    load('bubbles.mat')
     %s.areamap=areamap2;
-    s.ypos=ypos;
-    s.yseg_mean=yseg_mean;
-    %s.areaseg_mean=areaseg_mean;
-    s.yseg_num=yseg_num;
-    %s.areaseg_num=areaseg_num;
-    s.yseg_std=yseg_std;
-    %s.areaseg_std=areaseg_std;
-    s.num_co=num_co2;
-    s.file=name;
+%     s.ypos=ypos;
+%     s.yseg_mean=yseg_mean;
+%     %s.areaseg_mean=areaseg_mean;
+%     s.yseg_num=yseg_num;
+%     %s.areaseg_num=areaseg_num;
+%     s.yseg_std=yseg_std;
+%     %s.areaseg_std=areaseg_std;
+%     %s.num_co=num_co2;
+%     s.file=name;
+    s.ypos = edges;
+    s.yseg_mean = mean_area_vs_y;
+    s.yseg_std = stdev_area_vs_y;
     arr{i,1}=s;
-    clear('s','ypos','yseg_mean','yseg_num', ...
-        'yseg_std','num_co2')
+%     clear('s','ypos','yseg_mean','yseg_num', ...
+%        'yseg_std','num_co2')
     cd ..
 end
 
 %%
-ind=[1 5 4];
+ind=[1 2 3];
 
 for i =1:size(ind,2)
     j = ind(i);%mod(i+9,11)+1;
     disp(j)
     y=arr{j,1}.ypos;
     ysm=arr{j,1}.yseg_mean;
-    plot(y,ysm(1,:)./ysm(17))
+    plot(y,ysm(1,:)./ysm(1,140),'LineWidth', 0.5)
 %     plot(y,arr{j,1}.num_co)
 %     area_200(i)=ysm(3,136);
 %     area_100(i)=ysm(3,164);
@@ -41,16 +45,15 @@ for i =1:size(ind,2)
     hold on
 end
 set(gca,'box','on') 
-xlim([0 600])
-%ylim([400 850])
+xlim([0 500])
+%ylim([0 1.2])
 %lgd=legend(names{ind});
-lgd=legend('17','21','24');
-title(lgd,['Injection' newline 'Pressure (kPa)'])
-% title(lgd,['Packing' newline 'Fraction (%)'])
+lgd=legend('60','100','150');
+title(lgd,['Idle' newline 'Time (ms)'])
 set(gca,'FontSize',10, 'FontName', 'Times New Roman')
-set(gcf,'units','inches','position',[0,0,3.25,2.5])
+set(gcf,'units','inches','position',[0,0,4,3])
 ylabel('Normalized Bubble Area')
-xlabel('Bubble Height (mm)')
+xlabel('Bubble Vertical Position (mm)')
 %  ylabel('Number of Coalescence')
 %%
 figure

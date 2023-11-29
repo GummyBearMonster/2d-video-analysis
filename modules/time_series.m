@@ -1,4 +1,4 @@
-v = VideoReader('20psi-1lpm-500fps.mp4');
+v = VideoReader('2.5psi-40ms-35ms-2000.mp4');
 
 freq = 3.04;
 frames = round(500/freq);
@@ -58,7 +58,7 @@ imshow(RGB)
 imwrite(RGB,'Figure 1.jpg')
 
 %% Image
-v = VideoReader('20psi-1lpm.mp4');
+v = VideoReader('2.5psi-80ms-35ms-2000.mp4');
 
 vor = VideoWriter('RealTime.avi');
 vos = VideoWriter('SlowMo.avi');
@@ -68,20 +68,20 @@ vos.FrameRate=25;
 
 open(vor)
 open(vos)
-%rectangle_pos1=[0 height-round(ub1/dx) 500 round(ub1/dx)-round(lb1/dx)];
-%rectangle_pos2=[0 height-round(ub2/dx) 500 round(ub2/dx)-round(lb2/dx)];
+rectangle_pos1=[0 height-round(ub1/dx) 500 round(ub1/dx)-round(lb1/dx)];
+rectangle_pos2=[0 height-round(ub2/dx) 500 round(ub2/dx)-round(lb2/dx)];
 %myfig=figure();
 for i = 1:20:10000
     frame = v.read(i);
     frame=frame(ymin:ymax,xmin:xmax);
-    %frame=insertShape(frame,'FilledRectangle',[rectangle_pos1; rectangle_pos2],'Color','red','Opacity',0.3);
+    frame=insertShape(frame,'FilledRectangle',[rectangle_pos1; rectangle_pos2],'Color','red','Opacity',0.3);
     writeVideo(vor,frame);
 end
 
-for i = 2001:2:3000
+for i = 2001:1:3000
     frame = v.read(i);
     frame=frame(ymin:ymax,xmin:xmax);
-    %frame=insertShape(frame,'FilledRectangle',[rectangle_pos1; rectangle_pos2],'Color','red','Opacity',0.3);
+    frame=insertShape(frame,'FilledRectangle',[rectangle_pos1; rectangle_pos2],'Color','red','Opacity',0.3);
     writeVideo(vos,frame);
 end
 close(vor)

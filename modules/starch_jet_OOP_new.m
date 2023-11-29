@@ -20,6 +20,7 @@ RIGHT_BOTTOM_X=15;
 RIGHT_BOTTOM_Y=16;
 LEFT_BOTTOM_X=17;
 LEFT_BOTTOM_Y=18;
+%%
 
 outputArray=zeros(100,18,30000);
 I=binarizedArray(:,:,1);
@@ -64,39 +65,28 @@ caa=zeros(0,2);
 can=zeros(0,1);
 cau=zeros(0,1);
 for i=1:30000
-%     imshow(binarizedArray(:,:,i))
-%     hold on
     for j=1:100
         if outputArray(j,COALESCED,i)~=0 && outputArray(j,CENTROID_X,i)>10 && outputArray(j,NCOALESCE,i)>0
-            ca=cat(1,ca,[outputArray(j,CENTROID_X,i) outputArray(j,CENTROID_Y,i)]);
-            caa=cat(1,caa,[outputArray(j,CENTROID_Y,i) outputArray(j,AREA,i)]);
+            ca=cat(1,ca,[outputArray(j,CENTROID_X,i)*dx outputArray(j,CENTROID_Y,i)*dx]);
+            caa=cat(1,caa,[outputArray(j,CENTROID_Y,i)*dx outputArray(j,AREA,i)*dx*dx]);
             can=cat(1,can,round(outputArray(j,NCOALESCE,i)*2)/2);
-%             for k=1:slots
-%                 if outputArray(k,COALESCED,i-2)~=0
-%                     if abs(outputArray(k,CENTROID_Y,i-2)-outputArray(j,CENTROID_Y,i))<30
-%                         cau=cat(1,cau,i);
-%                     end
-%                 end
-%             end
         end
     end
 end
 %%
 g=gscatter(ca(:,1),ca(:,2),can,'');
 set(gca,'Ydir','reverse')
-xlim([1 xmax-xmin])
-ylim([1 ymax-ymin])
+xlim([1 (xmax-xmin)*dx])
+ylim([1 (ymax-ymin)*dx])
 daspect([1 1 1])
 set(gca,'Ydir','reverse')
 saveas(gcf,'coord.jpg');
 saveas(gcf,'coord.fig');
 
-%g(3).Color='k';
-%legend('2, count=145','3, count=1','4, count=72')
 
 %%
 figure
-h=gscatter(ymax-ymin-caa(:,1),caa(:,2),can);
+h=gscatter((ymax-ymin)*dx-caa(:,1),caa(:,2),can);
 xlim([1 ymax-ymin])
 xlabel('Y Coordinates')
 ylabel('Area')
@@ -257,31 +247,34 @@ set(gca,'FontSize',12,'FontName','Times New Roman')
 saveas(gca,'avg_v_y.fig')
 exportgraphics(t,'avg_v_y.jpg')
 %% Area
+p=randperm(size(caa,1),500);
 figure
 ypos2=[ypos,fliplr(ypos)];
 plot(ypos,yseg_mean(3,:),'b')
 hold on
+plot((ymax-ymin)*dx-caa(p,1),caa(p,2),'^');
 reg=[yseg_mean(3,:)+yseg_std(3,:),fliplr(yseg_mean(3,:)-yseg_std(3,:))];
 h=fill(ypos2,reg,[0.6 0.6 0.7],'LineStyle','--','LineWidth',0.5);
-%hold on
-%fill([1 1 54 54],[-1 1100 1100 -1],'r','facealpha',0.1)
-%hold on 
-%fill([160 160 231 231],[-1 1100 1100 -1],'r','facealpha',0.1)
-%hold on 
-%xline(160)
-%hold on 
-%xline(231)
+hold on
+fill([1 1 54 54],[-1 1100 1100 -1],'r','facealpha',0.1)
+hold on 
+fill([160 160 231 231],[-1 1100 1100 -1],'r','facealpha',0.1)
+hold on 
+xline(160)
+hold on 
+xline(231)
 set(h,'facealpha',0.1)
 xlim([0 height*dx])
 ylim([0 max(yseg_mean(3,:)+yseg_std(3,:))])
-legend('Mean bubble area','Mean area ± SD','Location','southeast')
+legend('Mean bubble area','Coalescence events','Mean area ± SD','Location','southeast')
 ylim([0 max(yseg_mean(3,:)+yseg_std(3,:))])
 ylabel('Bubble area (mm^2)')
 xlabel('Bubble height (mm)')
 set(gcf,'units','inches','position',[0,0,4,3])
 set(gca,'FontSize',12,'FontName','Times New Roman')
+
 saveas(gca,'avg_area.fig')
-saveas(gca,'avg_area.jpg')
+saveas(gca,'avg_area.svg')
 %% Width
 figure
 widthmap3=[widthmap2,fliplr(widthmap2)];
